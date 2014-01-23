@@ -23,29 +23,31 @@
         var listener;
         if (selector){
             listener = function(event){
-                blend(event); // normalize between touch and mouse events
+                // blend(event); // normalize between touch and mouse events
                 // if (eventname === 'mousedown'){
                 //     console.log(event);
                 // }
-                if (!event.wbValid){
-                    // console.log('event %s is not valid', eventname);
-                    return;
-                }
-                if (wb.matches(event.wbTarget, selector)){
+                // if (!event.wbValid){
+                //     // console.log('event %s is not valid', eventname);
+                //     return;
+                // }
+                // if (wb.matches(event.wbTarget, selector)){
+                if (wb.matches(event.target, selector)){
                     handler(event);
-                }else if (wb.matches(event.wbTarget, selector + ' *')){
-                    event.wbTarget = wb.closest(event.wbTarget, selector);
-                    handler(event);
+                // }else if (wb.matches(event.wbTarget, selector + ' *')){
+                //     event.wbTarget = wb.closest(event.wbTarget, selector);
+                //     handler(event);
                 }
             };
         }else{
-            listener = function(event){
-                blend(event);
-                if (!event.wbValid){
-                    return;
-                }
-                handler(event);
-            };
+            // listener = function(event){
+            //     blend(event);
+            //     if (!event.wbValid){
+            //         return;
+            //     }
+            //     handler(event);
+            // };
+            listener = handler;
         }
         elem.addEventListener(eventname, listener, false);
         return listener;
@@ -76,73 +78,73 @@
     };
 
     // Are touch events supported?
-    var isTouch = ('ontouchstart' in global);
-    var isMouseEvent = function isMouseEvent(event){
-        switch(event.type){
-            case 'mousedown':
-            case 'mousemove':
-            case 'mouseup':
-            case 'click':
-                return true;
-            default:
-                return false;
-        }
-    };
-    var isTouchEvent = function isTouchEvent(event){
-        switch(event.type){
-            case 'touchstart':
-            case 'touchmove':
-            case 'touchend':
-            case 'tap':
-                return true;
-            default:
-                return false;
-        }
-    };
+    // var isTouch = ('ontouchstart' in global);
+    // var isMouseEvent = function isMouseEvent(event){
+    //     switch(event.type){
+    //         case 'mousedown':
+    //         case 'mousemove':
+    //         case 'mouseup':
+    //         case 'click':
+    //             return true;
+    //         default:
+    //             return false;
+    //     }
+    // };
+    // var isTouchEvent = function isTouchEvent(event){
+    //     switch(event.type){
+    //         case 'touchstart':
+    //         case 'touchmove':
+    //         case 'touchend':
+    //         case 'tap':
+    //             return true;
+    //         default:
+    //             return false;
+    //     }
+    // };
 
-    var isPointerEvent = function isPointerEvent(event){
-        return isTouchEvent(event) || isMouseEvent(event);
-    };
+    // var isPointerEvent = function isPointerEvent(event){
+    //     return isTouchEvent(event) || isMouseEvent(event);
+    // };
 
-    // Treat mouse events and single-finger touch events similarly
-    var blend = function(event){
-        if (isPointerEvent(event)){
-            if (isTouchEvent(event)){
-                var touch = null;
-                if (event.touches.length === 1){
-                    touch = event.touches[0];
-                }else if (event.changedTouches.length === 1){
-                    touch = event.changedTouches[0];
-                }else{
-                    return event;
-                }
-                event.wbTarget = touch.target;
-                event.wbPageX = touch.pageX;
-                event.wbPageY = touch.pageY;
-                event.wbValid = true;
-            }else{
-                if (event.which !== 1){ // left mouse button
-                    return event;
-                }
-                event.wbTarget = event.target;
-                event.wbPageX = event.pageX;
-                event.wbPageY = event.pageY;
-                event.wbValid = true;
-            }
-        }else{
-            event.wbTarget = event.target;
-            event.wbValid = true;
-        }
-        // fix target?
-        return event;
-    }
+    // // Treat mouse events and single-finger touch events similarly
+    // var blend = function(event){
+    //     if (isPointerEvent(event)){
+    //         if (isTouchEvent(event)){
+    //             var touch = null;
+    //             if (event.touches.length === 1){
+    //                 touch = event.touches[0];
+    //             }else if (event.changedTouches.length === 1){
+    //                 touch = event.changedTouches[0];
+    //             }else{
+    //                 return event;
+    //             }
+    //             event.wbTarget = touch.target;
+    //             event.wbPageX = touch.pageX;
+    //             event.wbPageY = touch.pageY;
+    //             event.wbValid = true;
+    //         }else{
+    //             if (event.which !== 1){ // left mouse button
+    //                 return event;
+    //             }
+    //             event.wbTarget = event.target;
+    //             event.wbPageX = event.pageX;
+    //             event.wbPageY = event.pageY;
+    //             event.wbValid = true;
+    //         }
+    //     }else{
+    //         event.wbTarget = event.target;
+    //         event.wbValid = true;
+    //     }
+    //     // fix target?
+    //     return event;
+    // }
 
 
     global.Event = {
         on: on,
         off: off,
         once: once,
-        trigger: trigger,
-        isTouch: isTouch
+        trigger: trigger
+        // isTouch: isTouch
     };
 })(this);

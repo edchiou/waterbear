@@ -33,8 +33,8 @@
     var svgtext = document.querySelector('svg text');
     wb.resize = function(input){
         if (!input) return;
-        if (input.wbTarget){
-            input = input.wbTarget;
+        if (input.target){
+            input = input.target; // used on inputs directly, but also with events
         }
         svgtext.textContent = input.value || '';
         var textbox = svgtext.getBBox();

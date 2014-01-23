@@ -139,7 +139,7 @@
                 obj.contained.map(function(childdesc){
                     var child = Block(childdesc);
                     contained.appendChild(child);
-                    addStep({wbTarget: child}); // simulate event
+                    addStep({target: child}); // simulate event
                 });
             }
             if (! wb.matches(block, '.scripts_workspace')){
@@ -162,28 +162,30 @@
 
     function removeBlock(event){
         event.stopPropagation();
-        if (wb.matches(event.wbTarget, '.expression')){
+        var block = wb.closest(event.target, '.block');
+        if (wb.matches(block, '.expression')){
             removeExpression(event);
         }else{
             removeStep(event);
         }
-        Event.trigger(document.body, 'wb-modified', {block: event.wbTarget, type: 'removed'});
+        Event.trigger(document.body, 'wb-modified', {block: block, type: 'removed'});
     }
 
     function addBlock(event){
         event.stopPropagation();
-        if (wb.matches(event.wbTarget, '.expression')){
+        var block = wb.closest(event.target, '.block');
+        if (wb.matches(block, '.expression')){
             addExpression(event);
         }else{
             addStep(event);
         }
-        Event.trigger(document.body, 'wb-modified', {block: event.wbTarget, type: 'added'});
+        Event.trigger(document.body, 'wb-modified', {block: block, type: 'added'});
     }
 
     function removeStep(event){
         // About to remove a block from a block container, but it still exists and can be re-added
         // Remove instances of locals
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         // console.log('remove block: %o', block);
         if (block.classList.contains('step') && !block.classList.contains('context')){
             var parent = wb.closest(block, '.context'); // valid since we haven't actually removed the block from the DOM yet
@@ -204,7 +206,7 @@
     function removeExpression(event){
         // Remove an expression from an expression holder, say for dragging
         // Revert socket to default
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         //  ('remove expression %o', block);
         wb.findChildren(block.parentElement, 'input, select').forEach(function(elem){
             elem.removeAttribute('style');
@@ -213,7 +215,7 @@
 
     function addStep(event){
         // Add a block to a block container
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         // console.log('add block %o', block);
         if (block.dataset.locals && block.dataset.locals.length && !block.dataset.localsAdded){
             var parent = wb.closest(block, '.context');
@@ -246,7 +248,7 @@
     function addExpression(event){
         // add an expression to an expression holder
         // hide or remove default block
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         // console.log('add expression %o', block);
         wb.findChildren(block.parentElement, 'input, select').forEach(function(elem){
             elem.style.display = 'none';
@@ -258,7 +260,7 @@
 
     function onClone(event){
         // a block has been cloned. Praise The Loa!
-        var block = event.wbTarget;
+        // var block = wb.closest(event.target, '.block');
         // console.log('block cloned %o', block);
     }
 
@@ -310,7 +312,7 @@
             }
             if (newBlock){
                 holder.appendChild(newBlock);
-                addExpression({'wbTarget': newBlock});
+                addExpression({'target': newBlock}); // simulate event
             }
         }
         return socket;
@@ -418,7 +420,7 @@
     function deleteBlock(event){
         // delete a block from the script entirely
         // remove from registry
-        var block = event.wbTarget;
+        // var block = wb.closest(event.target, '.block');
         // console.log('block deleted %o', block);
     }
 
@@ -530,7 +532,7 @@
     };
 
     function changeName(event){
-        var nameSpan = event.wbTarget;
+        var nameSpan = event.target;
         var input = elem('input', {value: nameSpan.textContent});
         nameSpan.parentNode.appendChild(input);
         nameSpan.style.display = 'none';
@@ -543,7 +545,7 @@
 
     function updateName(event){
         // console.log('updateName on %o', event);
-        var input = event.wbTarget;
+        var input = event.target;
         Event.off(input, 'blur', updateName);
         Event.off(input, 'keydown', maybeUpdateName);
         var nameSpan = input.previousSibling;
@@ -572,7 +574,7 @@
 			parent.dataset.locals = JSON.stringify(parentLocals);
 
 			wb.find(parent, '.name').textContent = nameTemplate;
-    	    Event.trigger(document.body, 'wb-modified', {block: event.wbTarget, type: 'nameChanged'});
+    	    Event.trigger(document.body, 'wb-modified', {block: source, type: 'nameChanged'});
 		}
 		var action = {
 			undo: function() {
@@ -587,7 +589,7 @@
     }
 
     function cancelUpdateName(event){
-        var input = event.wbTarget;
+        var input = event.target;
         var nameSpan = input.previousSibling;
         Event.off(input, 'blur', updateName);
         Event.off(input, 'keydown', maybeUpdateName);
@@ -596,7 +598,7 @@
     }
 
     function maybeUpdateName(event){
-        var input = event.wbTarget;
+        var input = event.target;
         if (event.keyCode === 0x1B /* escape */ ){
             event.preventDefault();
             input.value = input.previousSibling.textContent;

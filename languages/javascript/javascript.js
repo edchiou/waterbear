@@ -128,9 +128,9 @@
 
 
 
-    Event.on('.socket input', 'click', null, function(event){
-        event.wbTarget.focus();
-        event.wbTarget.select();
+    Event.on('.socket input', 'tap', null, function(event){
+        event.target.focus();
+        event.target.select();
     });
 
 })(wb, Event);

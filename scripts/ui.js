@@ -3,13 +3,12 @@
 // UI Chrome Section
 
 function tabSelect(event){
-    var target = event.wbTarget;
     event.preventDefault();
     document.querySelector('.tabbar .selected').classList.remove('selected');
-    target.classList.add('selected');
-    if (wb.matches(target, '.scripts_workspace_tab')){
+    event.target.classList.add('selected');
+    if (wb.matches(event.target, '.scripts_workspace_tab')){
         showWorkspace('block');
-    }else if (wb.matches(target, '.scripts_text_view_tab')){
+    }else if (wb.matches(event.target, '.scripts_text_view_tab')){
         showWorkspace('text');
         updateScriptsView();
     }
@@ -21,8 +20,8 @@ function accordion(event){
     if (open){
         open.classList.remove('open');
     }
-    if (open && open === event.wbTarget.nextSibling) return;
-    event.wbTarget.nextSibling.classList.add('open');
+    if (open && open === event.target.nextSibling) return;
+    event.target.nextSibling.classList.add('open');
 }
 
 
@@ -262,7 +261,7 @@ function stackTrace() {
 
 function closeContextMenu(evt) {
 	var contextDiv = document.getElementById('context_menu');
-	if(!wb.matches(evt.wbTarget, '#context_menu *')) {
+	if(!wb.matches(evt.target, '#context_menu *')) {
 		contextDiv.style.display = 'none';
 	}
 }
@@ -272,11 +271,11 @@ function handleContextMenu(evt) {
 	stackTrace();
 	//if(!show_context) return;
 	// console.log(evt.clientX, evt.clientY);
-	// console.log(evt.wbTarget);
-	if(cmenu_disabled || wb.matches(evt.wbTarget, '.block-menu *')) return;
+	// console.log(evt.target);
+	if(cmenu_disabled || wb.matches(evt.target, '.block-menu *')) return;
 	else if(false);
-	else if(wb.matches(evt.wbTarget, '.block:not(.scripts_workspace) *')) {
-		setContextMenuTarget(evt.wbTarget);
+	else if(wb.matches(evt.target, '.block:not(.scripts_workspace) *')) {
+		setContextMenuTarget(evt.target);
 		buildContextMenu(block_cmenu);
 	} else return;
 	showContextMenu(evt.clientX, evt.clientY);

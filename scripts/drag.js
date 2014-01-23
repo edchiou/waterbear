@@ -98,14 +98,13 @@
     function initDrag(event){
         // Called on mousedown or touchstart, we haven't started dragging yet
         // DONE: Don't start drag on a text input or select using :input jquery selector
-        var eT = event.wbTarget; // <- WB
         //Check whether the original target was an input ....
         // WB-specific
-        if (wb.matches(event.target, 'input, select, option, .disclosure, .contained')  && !wb.matches(eT, '#block_menu *')) {
+        if (wb.matches(event.target, 'input, select, option, .disclosure, .contained')  && !wb.matches(event.target, '#block_menu *')) {
             // console.log('not a drag handle');
             return undefined;
         }
-        var target = wb.closest(eT, '.block'); // <- WB
+        var target = wb.closest(event.target, '.block'); // <- WB
         if (target){
             // WB-Specific
             if (wb.matches(target, '.scripts_workspace')){
@@ -465,8 +464,8 @@
 
     function selectSocket(event){
         // FIXME: Add tests for type of socket, whether it is filled, etc.
-        event.wbTarget.classList.add('selected');
-        selectedSocket = event.wbTarget;
+        event.target.classList.add('selected');
+        selectedSocket = event.target;
     }
 
     function hitTest(){
@@ -551,22 +550,11 @@
     // Initialize event handlers
     wb.initializeDragHandlers = function(){
         // console.log('initializeDragHandlers');
-        if (Event.isTouch){
-            Event.on('.content', 'touchstart', '.block', initDrag);
-            Event.on('.content', 'touchmove', null, drag);
-            Event.on('.content', 'touchend', null, endDrag);
-            // TODO: A way to cancel the drag?
-            // Event.on('.scripts_workspace', 'tap', '.socket', selectSocket);
-        }else{
-            Event.on('.content', 'mousedown', '.block', initDrag);
-            Event.on('.content', 'mousemove', null, drag);
-            Event.on('.content', 'mouseup', null, endDrag);
-            Event.on(document.body, 'keyup', null, cancelDrag);
-            // Event.on('.scripts_workspace', 'click', '.socket', selectSocket);
-        }
+        Event.on('.content', 'trackstart', '.block', initDrag);
+        Event.on('.content', 'track', null, drag);
+        Event.on('.content', 'track', null, endDrag);
+        Event.on(document.body, 'keyup', null, cancelDrag);
     };
-
-
 
 })(this);
 
