@@ -21,7 +21,7 @@ var plugins = {
 
 var pluginlibs = {
     arduino: [],
-    javascript: ['pointerevents', 'pointergestures', SAT'],
+    javascript: ['SAT'],
     minecraftjs: [],
     demo: [],
     processingjs: ['processing-1.4.1']
@@ -39,7 +39,7 @@ var scripts = ['ajax', 'queryparams', 'util', 'event', 'drag', 'uuid', 'block', 
 
 var libs = {
     arduino: [],
-    javascript: ['pointerevents', 'pointergestures', beautify', 'highlight', 'highlight-javascript'],
+    javascript: ['beautify', 'highlight', 'highlight-javascript'],
     minecraftjs: ['beautify', 'highlight', 'highlight-javascript'],
     demo: ['beautify', 'highlight', 'highlight-javascript'],
     processingjs: ['beautify', 'highlight', 'highlight-javascript', 'processing-1.4.1']

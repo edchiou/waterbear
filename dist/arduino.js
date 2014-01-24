@@ -102,8 +102,8 @@ global.ajax = ajax;
     var svgtext = document.querySelector('svg text');
     wb.resize = function(input){
         if (!input) return;
-        if (input.wbTarget){
-            input = input.wbTarget;
+        if (input.target){
+            input = input.target; // used on inputs directly, but also with events
         }
         svgtext.textContent = input.value || '';
         var textbox = svgtext.getBBox();
@@ -332,29 +332,31 @@ global.ajax = ajax;
         var listener;
         if (selector){
             listener = function(event){
-                blend(event); // normalize between touch and mouse events
+                // blend(event); // normalize between touch and mouse events
                 // if (eventname === 'mousedown'){
                 //     console.log(event);
                 // }
-                if (!event.wbValid){
-                    // console.log('event %s is not valid', eventname);
-                    return;
-                }
-                if (wb.matches(event.wbTarget, selector)){
+                // if (!event.wbValid){
+                //     // console.log('event %s is not valid', eventname);
+                //     return;
+                // }
+                // if (wb.matches(event.wbTarget, selector)){
+                if (wb.matches(event.target, selector)){
                     handler(event);
-                }else if (wb.matches(event.wbTarget, selector + ' *')){
-                    event.wbTarget = wb.closest(event.wbTarget, selector);
-                    handler(event);
+                // }else if (wb.matches(event.wbTarget, selector + ' *')){
+                //     event.wbTarget = wb.closest(event.wbTarget, selector);
+                //     handler(event);
                 }
             };
         }else{
-            listener = function(event){
-                blend(event);
-                if (!event.wbValid){
-                    return;
-                }
-                handler(event);
-            };
+            // listener = function(event){
+            //     blend(event);
+            //     if (!event.wbValid){
+            //         return;
+            //     }
+            //     handler(event);
+            // };
+            listener = handler;
         }
         elem.addEventListener(eventname, listener, false);
         return listener;
@@ -385,74 +387,74 @@ global.ajax = ajax;
     };
 
     // Are touch events supported?
-    var isTouch = ('ontouchstart' in global);
-    var isMouseEvent = function isMouseEvent(event){
-        switch(event.type){
-            case 'mousedown':
-            case 'mousemove':
-            case 'mouseup':
-            case 'click':
-                return true;
-            default:
-                return false;
-        }
-    };
-    var isTouchEvent = function isTouchEvent(event){
-        switch(event.type){
-            case 'touchstart':
-            case 'touchmove':
-            case 'touchend':
-            case 'tap':
-                return true;
-            default:
-                return false;
-        }
-    };
+    // var isTouch = ('ontouchstart' in global);
+    // var isMouseEvent = function isMouseEvent(event){
+    //     switch(event.type){
+    //         case 'mousedown':
+    //         case 'mousemove':
+    //         case 'mouseup':
+    //         case 'click':
+    //             return true;
+    //         default:
+    //             return false;
+    //     }
+    // };
+    // var isTouchEvent = function isTouchEvent(event){
+    //     switch(event.type){
+    //         case 'touchstart':
+    //         case 'touchmove':
+    //         case 'touchend':
+    //         case 'tap':
+    //             return true;
+    //         default:
+    //             return false;
+    //     }
+    // };
 
-    var isPointerEvent = function isPointerEvent(event){
-        return isTouchEvent(event) || isMouseEvent(event);
-    };
+    // var isPointerEvent = function isPointerEvent(event){
+    //     return isTouchEvent(event) || isMouseEvent(event);
+    // };
 
-    // Treat mouse events and single-finger touch events similarly
-    var blend = function(event){
-        if (isPointerEvent(event)){
-            if (isTouchEvent(event)){
-                var touch = null;
-                if (event.touches.length === 1){
-                    touch = event.touches[0];
-                }else if (event.changedTouches.length === 1){
-                    touch = event.changedTouches[0];
-                }else{
-                    return event;
-                }
-                event.wbTarget = touch.target;
-                event.wbPageX = touch.pageX;
-                event.wbPageY = touch.pageY;
-                event.wbValid = true;
-            }else{
-                if (event.which !== 1){ // left mouse button
-                    return event;
-                }
-                event.wbTarget = event.target;
-                event.wbPageX = event.pageX;
-                event.wbPageY = event.pageY;
-                event.wbValid = true;
-            }
-        }else{
-            event.wbTarget = event.target;
-            event.wbValid = true;
-        }
-        // fix target?
-        return event;
-    }
+    // // Treat mouse events and single-finger touch events similarly
+    // var blend = function(event){
+    //     if (isPointerEvent(event)){
+    //         if (isTouchEvent(event)){
+    //             var touch = null;
+    //             if (event.touches.length === 1){
+    //                 touch = event.touches[0];
+    //             }else if (event.changedTouches.length === 1){
+    //                 touch = event.changedTouches[0];
+    //             }else{
+    //                 return event;
+    //             }
+    //             event.wbTarget = touch.target;
+    //             event.wbPageX = touch.pageX;
+    //             event.wbPageY = touch.pageY;
+    //             event.wbValid = true;
+    //         }else{
+    //             if (event.which !== 1){ // left mouse button
+    //                 return event;
+    //             }
+    //             event.wbTarget = event.target;
+    //             event.wbPageX = event.pageX;
+    //             event.wbPageY = event.pageY;
+    //             event.wbValid = true;
+    //         }
+    //     }else{
+    //         event.wbTarget = event.target;
+    //         event.wbValid = true;
+    //     }
+    //     // fix target?
+    //     return event;
+    // }
 
 
     global.Event = {
         on: on,
         off: off,
         once: once,
-        trigger: trigger,
-        isTouch: isTouch
+        trigger: trigger
+        // isTouch: isTouch
     };
 })(this);
 
@@ -471,6 +473,7 @@ global.ajax = ajax;
 
     // FIXME: Remove references to waterbear
     // FIXME: Include mousetouch in garden
+    // FIXME: We don't need the snapping of tabs to slots anymore
 
 
 // Goals:
@@ -498,7 +501,6 @@ global.ajax = ajax;
 // 3. On mouseup, if dragging, stop
 //     a) test for drop, handle if necessary
 //     b) clean up temporary elements, remove or move back if not dropping
-//
 //
 // Touch dragging
 //
@@ -554,19 +556,16 @@ global.ajax = ajax;
     }
     reset();
 
-
-
     function initDrag(event){
         // Called on mousedown or touchstart, we haven't started dragging yet
         // DONE: Don't start drag on a text input or select using :input jquery selector
-        var eT = event.wbTarget; // <- WB
         //Check whether the original target was an input ....
         // WB-specific
-        if (wb.matches(event.target, 'input, select, option, .disclosure, .contained')  && !wb.matches(eT, '#block_menu *')) {
+        if (wb.matches(event.target, 'input, select, option, .disclosure, .contained')  && !wb.matches(event.target, '#block_menu *')) {
             // console.log('not a drag handle');
             return undefined;
         }
-        var target = wb.closest(eT, '.block'); // <- WB
+        var target = wb.closest(event.target, '.block'); // <- WB
         if (target){
             // WB-Specific
             if (wb.matches(target, '.scripts_workspace')){
@@ -574,6 +573,7 @@ global.ajax = ajax;
                 return undefined;
             }
             dragTarget = target;
+            console.log('initDrag(%o), target: %o', event, target);
             // WB-Specific
             if (target.parentElement.classList.contains('block-menu')){
                 target.dataset.isTemplateBlock = 'true';
@@ -608,8 +608,9 @@ global.ajax = ajax;
     function startDrag(event){
         // called on mousemove or touchmove if not already dragging
         if (!dragTarget) {return undefined;}
+        console.log('startDrag(%o)', event);
         dragTarget.classList.add("dragIndication");
-        currentPosition = {left: event.wbPageX, top: event.wbPageY};
+        currentPosition = {left: event.pageX, top: event.pageY};
 		// Track source for undo/redo
 		dragAction.target = dragTarget;
 		dragAction.fromParent = startParent;
@@ -671,9 +672,10 @@ global.ajax = ajax;
     function drag(event){
         if (!dragTarget) {return undefined;}
         if (!currentPosition) {startDrag(event);}
+        console.log('drag(%o)', event);
         event.preventDefault();
         // update the variables, distance, button pressed
-        var nextPosition = {left: event.wbPageX, top: event.wbPageY}; // <- WB
+        var nextPosition = {left: event.pageX, top: event.pageY}; // <- WB
         var dX = nextPosition.left - currentPosition.left;
         var dY = nextPosition.top - currentPosition.top;
         var currPos = wb.rect(dragTarget); // <- WB
@@ -707,6 +709,7 @@ global.ajax = ajax;
         clearTimeout(timer);
         timer = null;
         if (!dragging) {return undefined;}
+        console.log('endDrag(%o)', end);
         handleDrop(end.altKey || end.ctrlKey);
         reset();
         return false;
@@ -926,8 +929,8 @@ global.ajax = ajax;
 
     function selectSocket(event){
         // FIXME: Add tests for type of socket, whether it is filled, etc.
-        event.wbTarget.classList.add('selected');
-        selectedSocket = event.wbTarget;
+        event.target.classList.add('selected');
+        selectedSocket = event.target;
     }
 
     function hitTest(){
@@ -1012,22 +1015,11 @@ global.ajax = ajax;
     // Initialize event handlers
     wb.initializeDragHandlers = function(){
         // console.log('initializeDragHandlers');
-        if (Event.isTouch){
-            Event.on('.content', 'touchstart', '.block', initDrag);
-            Event.on('.content', 'touchmove', null, drag);
-            Event.on('.content', 'touchend', null, endDrag);
-            // TODO: A way to cancel the drag?
-            // Event.on('.scripts_workspace', 'tap', '.socket', selectSocket);
-        }else{
-            Event.on('.content', 'mousedown', '.block', initDrag);
-            Event.on('.content', 'mousemove', null, drag);
-            Event.on('.content', 'mouseup', null, endDrag);
-            Event.on(document.body, 'keyup', null, cancelDrag);
-            // Event.on('.scripts_workspace', 'click', '.socket', selectSocket);
-        }
+        Event.on('.content', 'pointerdown', '.block, .block *', initDrag);
+        Event.on('.content', 'pointermove', null, drag);
+        Event.on('.content', 'pointerup', null, endDrag);
+        Event.on(document.body, 'keyup', null, cancelDrag);
     };
-
-
 
 })(this);
 
@@ -1180,6 +1172,7 @@ global.ajax = ajax;
                     }
                     return names.join(' ');
                 },
+                'touch-action': 'none', // support pointer-events
                 'data-blocktype': obj.blocktype,
                 'data-group': obj.group,
                 'id': obj.id,
@@ -1218,7 +1211,7 @@ global.ajax = ajax;
                 obj.contained.map(function(childdesc){
                     var child = Block(childdesc);
                     contained.appendChild(child);
-                    addStep({wbTarget: child}); // simulate event
+                    addStep({target: child}); // simulate event
                 });
             }
             if (! wb.matches(block, '.scripts_workspace')){
@@ -1241,28 +1234,30 @@ global.ajax = ajax;
 
     function removeBlock(event){
         event.stopPropagation();
-        if (wb.matches(event.wbTarget, '.expression')){
+        var block = wb.closest(event.target, '.block');
+        if (wb.matches(block, '.expression')){
             removeExpression(event);
         }else{
             removeStep(event);
         }
-        Event.trigger(document.body, 'wb-modified', {block: event.wbTarget, type: 'removed'});
+        Event.trigger(document.body, 'wb-modified', {block: block, type: 'removed'});
     }
 
     function addBlock(event){
         event.stopPropagation();
-        if (wb.matches(event.wbTarget, '.expression')){
+        var block = wb.closest(event.target, '.block');
+        if (wb.matches(block, '.expression')){
             addExpression(event);
         }else{
             addStep(event);
         }
-        Event.trigger(document.body, 'wb-modified', {block: event.wbTarget, type: 'added'});
+        Event.trigger(document.body, 'wb-modified', {block: block, type: 'added'});
     }
 
     function removeStep(event){
         // About to remove a block from a block container, but it still exists and can be re-added
         // Remove instances of locals
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         // console.log('remove block: %o', block);
         if (block.classList.contains('step') && !block.classList.contains('context')){
             var parent = wb.closest(block, '.context'); // valid since we haven't actually removed the block from the DOM yet
@@ -1283,7 +1278,7 @@ global.ajax = ajax;
     function removeExpression(event){
         // Remove an expression from an expression holder, say for dragging
         // Revert socket to default
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         //  ('remove expression %o', block);
         wb.findChildren(block.parentElement, 'input, select').forEach(function(elem){
             elem.removeAttribute('style');
@@ -1292,7 +1287,7 @@ global.ajax = ajax;
 
     function addStep(event){
         // Add a block to a block container
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         // console.log('add block %o', block);
         if (block.dataset.locals && block.dataset.locals.length && !block.dataset.localsAdded){
             var parent = wb.closest(block, '.context');
@@ -1325,7 +1320,7 @@ global.ajax = ajax;
     function addExpression(event){
         // add an expression to an expression holder
         // hide or remove default block
-        var block = event.wbTarget;
+        var block = wb.closest(event.target, '.block');
         // console.log('add expression %o', block);
         wb.findChildren(block.parentElement, 'input, select').forEach(function(elem){
             elem.style.display = 'none';
@@ -1337,7 +1332,7 @@ global.ajax = ajax;
 
     function onClone(event){
         // a block has been cloned. Praise The Loa!
-        var block = event.wbTarget;
+        // var block = wb.closest(event.target, '.block');
         // console.log('block cloned %o', block);
     }
 
@@ -1389,7 +1384,7 @@ global.ajax = ajax;
             }
             if (newBlock){
                 holder.appendChild(newBlock);
-                addExpression({'wbTarget': newBlock});
+                addExpression({'target': newBlock}); // simulate event
             }
         }
         return socket;
@@ -1497,7 +1492,7 @@ global.ajax = ajax;
     function deleteBlock(event){
         // delete a block from the script entirely
         // remove from registry
-        var block = event.wbTarget;
+        // var block = wb.closest(event.target, '.block');
         // console.log('block deleted %o', block);
     }
 
@@ -1609,7 +1604,7 @@ global.ajax = ajax;
     };
 
     function changeName(event){
-        var nameSpan = event.wbTarget;
+        var nameSpan = event.target;
         var input = elem('input', {value: nameSpan.textContent});
         nameSpan.parentNode.appendChild(input);
         nameSpan.style.display = 'none';
@@ -1622,7 +1617,7 @@ global.ajax = ajax;
 
     function updateName(event){
         // console.log('updateName on %o', event);
-        var input = event.wbTarget;
+        var input = event.target;
         Event.off(input, 'blur', updateName);
         Event.off(input, 'keydown', maybeUpdateName);
         var nameSpan = input.previousSibling;
@@ -1651,7 +1646,7 @@ global.ajax = ajax;
 			parent.dataset.locals = JSON.stringify(parentLocals);
 
 			wb.find(parent, '.name').textContent = nameTemplate;
-    	    Event.trigger(document.body, 'wb-modified', {block: event.wbTarget, type: 'nameChanged'});
+    	    Event.trigger(document.body, 'wb-modified', {block: source, type: 'nameChanged'});
 		}
 		var action = {
 			undo: function() {
@@ -1666,7 +1661,7 @@ global.ajax = ajax;
     }
 
     function cancelUpdateName(event){
-        var input = event.wbTarget;
+        var input = event.target;
         var nameSpan = input.previousSibling;
         Event.off(input, 'blur', updateName);
         Event.off(input, 'keydown', maybeUpdateName);
@@ -1675,7 +1670,7 @@ global.ajax = ajax;
     }
 
     function maybeUpdateName(event){
-        var input = event.wbTarget;
+        var input = event.target;
         if (event.keyCode === 0x1B /* escape */ ){
             event.preventDefault();
             input.value = input.previousSibling.textContent;
@@ -2034,13 +2029,12 @@ Event.on(document.body, 'wb-script-loaded', null, clearUndoStack);
 // UI Chrome Section
 
 function tabSelect(event){
-    var target = event.wbTarget;
     event.preventDefault();
     document.querySelector('.tabbar .selected').classList.remove('selected');
-    target.classList.add('selected');
-    if (wb.matches(target, '.scripts_workspace_tab')){
+    event.target.classList.add('selected');
+    if (wb.matches(event.target, '.scripts_workspace_tab')){
         showWorkspace('block');
-    }else if (wb.matches(target, '.scripts_text_view_tab')){
+    }else if (wb.matches(event.target, '.scripts_text_view_tab')){
         showWorkspace('text');
         updateScriptsView();
     }
@@ -2052,8 +2046,8 @@ function accordion(event){
     if (open){
         open.classList.remove('open');
     }
-    if (open && open === event.wbTarget.nextSibling) return;
-    event.wbTarget.nextSibling.classList.add('open');
+    if (open && open === event.target.nextSibling) return;
+    event.target.nextSibling.classList.add('open');
 }
 
 
@@ -2293,7 +2287,7 @@ function stackTrace() {
 
 function closeContextMenu(evt) {
 	var contextDiv = document.getElementById('context_menu');
-	if(!wb.matches(evt.wbTarget, '#context_menu *')) {
+	if(!wb.matches(evt.target, '#context_menu *')) {
 		contextDiv.style.display = 'none';
 	}
 }
@@ -2303,11 +2297,11 @@ function handleContextMenu(evt) {
 	stackTrace();
 	//if(!show_context) return;
 	// console.log(evt.clientX, evt.clientY);
-	// console.log(evt.wbTarget);
-	if(cmenu_disabled || wb.matches(evt.wbTarget, '.block-menu *')) return;
+	// console.log(evt.target);
+	if(cmenu_disabled || wb.matches(evt.target, '.block-menu *')) return;
 	else if(false);
-	else if(wb.matches(evt.wbTarget, '.block:not(.scripts_workspace) *')) {
-		setContextMenuTarget(evt.wbTarget);
+	else if(wb.matches(evt.target, '.block:not(.scripts_workspace) *')) {
+		setContextMenuTarget(evt.target);
 		buildContextMenu(block_cmenu);
 	} else return;
 	showContextMenu(evt.clientX, evt.clientY);

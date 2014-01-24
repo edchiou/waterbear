@@ -10,6 +10,7 @@
 
     // FIXME: Remove references to waterbear
     // FIXME: Include mousetouch in garden
+    // FIXME: We don't need the snapping of tabs to slots anymore
 
 
 // Goals:
@@ -37,7 +38,6 @@
 // 3. On mouseup, if dragging, stop
 //     a) test for drop, handle if necessary
 //     b) clean up temporary elements, remove or move back if not dropping
-//
 //
 // Touch dragging
 //
@@ -93,8 +93,6 @@
     }
     reset();
 
-
-
     function initDrag(event){
         // Called on mousedown or touchstart, we haven't started dragging yet
         // DONE: Don't start drag on a text input or select using :input jquery selector
@@ -112,6 +110,7 @@
                 return undefined;
             }
             dragTarget = target;
+            console.log('initDrag(%o), target: %o', event, target);
             // WB-Specific
             if (target.parentElement.classList.contains('block-menu')){
                 target.dataset.isTemplateBlock = 'true';
@@ -146,8 +145,9 @@
     function startDrag(event){
         // called on mousemove or touchmove if not already dragging
         if (!dragTarget) {return undefined;}
+        console.log('startDrag(%o)', event);
         dragTarget.classList.add("dragIndication");
-        currentPosition = {left: event.wbPageX, top: event.wbPageY};
+        currentPosition = {left: event.pageX, top: event.pageY};
 		// Track source for undo/redo
 		dragAction.target = dragTarget;
 		dragAction.fromParent = startParent;
@@ -209,9 +209,10 @@
     function drag(event){
         if (!dragTarget) {return undefined;}
         if (!currentPosition) {startDrag(event);}
+        console.log('drag(%o)', event);
         event.preventDefault();
         // update the variables, distance, button pressed
-        var nextPosition = {left: event.wbPageX, top: event.wbPageY}; // <- WB
+        var nextPosition = {left: event.pageX, top: event.pageY}; // <- WB
         var dX = nextPosition.left - currentPosition.left;
         var dY = nextPosition.top - currentPosition.top;
         var currPos = wb.rect(dragTarget); // <- WB
@@ -245,6 +246,7 @@
         clearTimeout(timer);
         timer = null;
         if (!dragging) {return undefined;}
+        console.log('endDrag(%o)', end);
         handleDrop(end.altKey || end.ctrlKey);
         reset();
         return false;
@@ -550,9 +552,9 @@
     // Initialize event handlers
     wb.initializeDragHandlers = function(){
         // console.log('initializeDragHandlers');
-        Event.on('.content', 'trackstart', '.block', initDrag);
-        Event.on('.content', 'track', null, drag);
-        Event.on('.content', 'track', null, endDrag);
+        Event.on('.content', 'pointerdown', '.block, .block *', initDrag);
+        Event.on('.content', 'pointermove', null, drag);
+        Event.on('.content', 'pointerup', null, endDrag);
         Event.on(document.body, 'keyup', null, cancelDrag);
     };
 

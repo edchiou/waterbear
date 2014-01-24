@@ -101,6 +101,7 @@
                     }
                     return names.join(' ');
                 },
+                'touch-action': 'none', // support pointer-events
                 'data-blocktype': obj.blocktype,
                 'data-group': obj.group,
                 'id': obj.id,
