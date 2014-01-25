@@ -552,7 +552,7 @@
     // Initialize event handlers
     wb.initializeDragHandlers = function(){
         // console.log('initializeDragHandlers');
-        Event.on('.content', 'pointerdown', '.block, .block *', initDrag);
+        Event.on('.content', 'pointerdown', '.block', initDrag);
         Event.on('.content', 'pointermove', null, drag);
         Event.on('.content', 'pointerup', null, endDrag);
         Event.on(document.body, 'keyup', null, cancelDrag);

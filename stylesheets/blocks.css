@@ -81,6 +81,11 @@
   clear: left;
 }
 
+/* don't return these items for drag events */
+.label, .socket, .name, .holder, .locals, .contained{
+  pointer-events: none;
+}
+
 .locals .expression{
   clear: none;
 }
