@@ -12603,7 +12603,7 @@ global.ajax = ajax;
                 return undefined;
             }
             dragTarget = target;
-            console.log('initDrag(%o), target: %o', event, target);
+            // console.log('initDrag(%o), target: %o', event, target);
             // WB-Specific
             if (target.parentElement.classList.contains('block-menu')){
                 target.dataset.isTemplateBlock = 'true';
@@ -12638,7 +12638,7 @@ global.ajax = ajax;
     function startDrag(event){
         // called on mousemove or touchmove if not already dragging
         if (!dragTarget) {return undefined;}
-        console.log('startDrag(%o)', event);
+        // console.log('startDrag(%o)', event);
         dragTarget.classList.add("dragIndication");
         currentPosition = {left: event.pageX, top: event.pageY};
 		// Track source for undo/redo
@@ -12702,7 +12702,7 @@ global.ajax = ajax;
     function drag(event){
         if (!dragTarget) {return undefined;}
         if (!currentPosition) {startDrag(event);}
-        console.log('drag(%o)', event);
+        // console.log('drag(%o)', event);
         event.preventDefault();
         // update the variables, distance, button pressed
         var nextPosition = {left: event.pageX, top: event.pageY}; // <- WB
@@ -12739,7 +12739,7 @@ global.ajax = ajax;
         clearTimeout(timer);
         timer = null;
         if (!dragging) {return undefined;}
-        console.log('endDrag(%o)', end);
+        // console.log('endDrag(%o)', end);
         handleDrop(end.altKey || end.ctrlKey);
         reset();
         return false;
