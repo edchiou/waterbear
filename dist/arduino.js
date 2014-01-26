@@ -556,16 +556,16 @@ global.ajax = ajax;
     }
     reset();
 
+    function initDragParent(event){
+        return initDragBlock(wb.closest(event.target, '.block'))
+    }
+
     function initDrag(event){
+        return initDragBlock(wb.target);
+    }
+
+    function initDragBlock(target){
         // Called on mousedown or touchstart, we haven't started dragging yet
-        // DONE: Don't start drag on a text input or select using :input jquery selector
-        //Check whether the original target was an input ....
-        // WB-specific
-        if (wb.matches(event.target, 'input, select, option, .disclosure, .contained')  && !wb.matches(event.target, '#block_menu *')) {
-            // console.log('not a drag handle');
-            return undefined;
-        }
-        var target = wb.closest(event.target, '.block'); // <- WB
         if (target){
             // WB-Specific
             if (wb.matches(target, '.scripts_workspace')){
@@ -573,7 +573,7 @@ global.ajax = ajax;
                 return undefined;
             }
             dragTarget = target;
-            // console.log('initDrag(%o), target: %o', event, target);
+            console.log('initDragBlock(%o), target: %o', event, target);
             // WB-Specific
             if (target.parentElement.classList.contains('block-menu')){
                 target.dataset.isTemplateBlock = 'true';
@@ -608,7 +608,7 @@ global.ajax = ajax;
     function startDrag(event){
         // called on mousemove or touchmove if not already dragging
         if (!dragTarget) {return undefined;}
-        // console.log('startDrag(%o)', event);
+        console.log('startDrag(%o)', event);
         dragTarget.classList.add("dragIndication");
         currentPosition = {left: event.pageX, top: event.pageY};
 		// Track source for undo/redo
@@ -672,7 +672,7 @@ global.ajax = ajax;
     function drag(event){
         if (!dragTarget) {return undefined;}
         if (!currentPosition) {startDrag(event);}
-        // console.log('drag(%o)', event);
+        console.log('drag(%o)', event);
         event.preventDefault();
         // update the variables, distance, button pressed
         var nextPosition = {left: event.pageX, top: event.pageY}; // <- WB
@@ -709,7 +709,7 @@ global.ajax = ajax;
         clearTimeout(timer);
         timer = null;
         if (!dragging) {return undefined;}
-        // console.log('endDrag(%o)', end);
+        console.log('endDrag(%o)', end);
         handleDrop(end.altKey || end.ctrlKey);
         reset();
         return false;
@@ -849,6 +849,11 @@ global.ajax = ajax;
     
     function revertDrop() {
 		// Put blocks back where we got them from
+        console.log('refertDrop');
+        if (templateDrag){
+            dragTarget.parentElement.removeChild(dragTarget);
+            return;
+        }
 		if (startParent){
 			if (wb.matches(startParent, '.socket')){
 				// wb.findChildren(startParent, 'input').forEach(function(elem){
@@ -999,27 +1004,35 @@ global.ajax = ajax;
         return '.socket[data-type=' + name + '] > .holder';
     }
     
-    function cancelDrag(event) {
+    function maybeCancelDrag(event) {
     	// Cancel if escape key pressed
         // console.log('cancel drag of %o', dragTarget);
     	if(event.keyCode == 27) {
-    		resetDragStyles();
-	    	revertDrop();
-			clearTimeout(timer);
-			timer = null;
-			reset();
-			return false;
-	    }
+            cancelDrag();
+            return false;
+        }
+    }
+
+    function cancelDrag(){
+        if (!dragging) return;
+        console.log('cancelDrag()');
+		resetDragStyles();
+    	revertDrop();
+		clearTimeout(timer);
+		timer = null;
+		reset();
     }
 
     // Initialize event handlers
     wb.initializeDragHandlers = function(){
         // console.log('initializeDragHandlers');
+        Event.on('.content', 'pointerdown', '.name', initDragParent);
         Event.on('.content', 'pointerdown', '.block', initDrag);
         Event.on('.content', 'pointermove', null, drag);
         Event.on('.content', 'pointerup', null, endDrag);
         Event.on(document.body, 'keyup', null, cancelDrag);
     };
+    wb.cancelDrag = cancelDrag;
 
 })(this);
 
@@ -1604,6 +1617,8 @@ global.ajax = ajax;
     };
 
     function changeName(event){
+        console.log('changeName() namespan = %o', event.target);
+        wb.cancelDrag();
         var nameSpan = event.target;
         var input = elem('input', {value: nameSpan.textContent});
         nameSpan.parentNode.appendChild(input);

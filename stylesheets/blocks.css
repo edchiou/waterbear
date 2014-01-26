@@ -82,7 +82,7 @@
 }
 
 /* don't return these items for drag events */
-.label, .socket, .name, .holder, .locals, .contained{
+.label, .socket, .holder, .locals, .contained{
   pointer-events: none;
 }
 

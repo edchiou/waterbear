@@ -533,6 +533,8 @@
     };
 
     function changeName(event){
+        console.log('changeName() namespan = %o', event.target);
+        wb.cancelDrag();
         var nameSpan = event.target;
         var input = elem('input', {value: nameSpan.textContent});
         nameSpan.parentNode.appendChild(input);
