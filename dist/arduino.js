@@ -561,7 +561,7 @@ global.ajax = ajax;
     }
 
     function initDrag(event){
-        return initDragBlock(wb.target);
+        return initDragBlock(event.target);
     }
 
     function initDragBlock(target){
@@ -712,7 +712,7 @@ global.ajax = ajax;
         console.log('endDrag(%o)', end);
         handleDrop(end.altKey || end.ctrlKey);
         reset();
-        return false;
+        // return false;
     }
 
     function handleDrop(copyBlock){

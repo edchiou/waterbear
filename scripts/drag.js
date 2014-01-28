@@ -98,7 +98,7 @@
     }
 
     function initDrag(event){
-        return initDragBlock(wb.target);
+        return initDragBlock(event.target);
     }
 
     function initDragBlock(target){

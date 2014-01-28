@@ -9,7 +9,7 @@
     wb.wrap = function(script){
         return [
             '(function(){', 
-                // 'try{',
+                'try{',
                     'local.canvas = document.createElement("canvas");',
                     'local.canvas.setAttribute("width", global.stage_width);',
                     'local.canvas.setAttribute("height", global.stage_height);',
@@ -21,9 +21,9 @@
                         script,
                     '}',
                     'global.preloadAssets(' + assetUrls() + ', main);',
-                // '}catch(e){',
-                    // 'alert(e);',
-                // '}',
+                '}catch(e){',
+                    'console.error("Exception when running script: %o\n%s", e, script);',
+                '}',
             '})()'
         ].join('\n');
     }

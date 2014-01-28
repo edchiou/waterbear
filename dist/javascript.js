@@ -2384,7 +2384,7 @@ global.ajax = ajax;
     }
 
     function initDrag(event){
-        return initDragBlock(wb.target);
+        return initDragBlock(event.target);
     }
 
     function initDragBlock(target){
@@ -2535,7 +2535,7 @@ global.ajax = ajax;
         console.log('endDrag(%o)', end);
         handleDrop(end.altKey || end.ctrlKey);
         reset();
-        return false;
+        // return false;
     }
 
     function handleDrop(copyBlock){
@@ -4601,7 +4601,7 @@ Event.on('.tabbar', 'click', '.chrome_tab', tabSelect);
     wb.wrap = function(script){
         return [
             '(function(){', 
-                // 'try{',
+                'try{',
                     'local.canvas = document.createElement("canvas");',
                     'local.canvas.setAttribute("width", global.stage_width);',
                     'local.canvas.setAttribute("height", global.stage_height);',
@@ -4613,9 +4613,9 @@ Event.on('.tabbar', 'click', '.chrome_tab', tabSelect);
                         script,
                     '}',
                     'global.preloadAssets(' + assetUrls() + ', main);',
-                // '}catch(e){',
-                    // 'alert(e);',
-                // '}',
+                '}catch(e){',
+                    'console.error("Exception when running script: %o\n%s", e, script);',
+                '}',
             '})()'
         ].join('\n');
     }
