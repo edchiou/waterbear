@@ -4640,7 +4640,7 @@ Event.on('.tabbar', 'click', '.chrome_tab', tabSelect);
                     '}',
                     'global.preloadAssets(' + assetUrls() + ', main);',
                 '}catch(e){',
-                    'console.error("Exception when running script: %o\n%s", e, script);',
+                    'console.error("Exception when running script: %o", e);',
                 '}',
             '})()'
         ].join('\n');
