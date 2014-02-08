@@ -304,10 +304,12 @@
             }
             dragAction.toParent = dragTarget.parentNode;
             dragAction.toBefore = dragTarget.nextElementSibling;
-            if(dragAction.toBefore && !wb.matches(dragAction.toBefore, '.block')) {
-            	// Sometimes the "next sibling" ends up being the cursor
-            	dragAction.toBefore = dragAction.toBefore.nextElementSibling;
-            }
+
+            //CLARIFY: What does this block do? dragAction.toBefore.nextElementSibling is always null
+            // if(dragAction.toBefore && !wb.matches(dragAction.toBefore, '.block')) {
+            // 	// Sometimes the "next sibling" ends up being the cursor
+            // 	dragAction.toBefore = dragAction.toBefore.nextElementSibling;
+            // }
             wb.history.add(dragAction);
         }else{
             if (cloned){
@@ -566,7 +568,7 @@
             // Event.on('.scripts_workspace', 'tap', '.socket', selectSocket);
         }else{
             Event.on('.content', 'mousedown', '.block', initDrag);
-            Event.on('.content', 'mousemove', null, drag);
+            Event.on(document, 'mousemove', null, drag);
             Event.on('.content', 'mouseup', null, endDrag);
             Event.on(document.body, 'keyup', null, cancelDrag);
             // Event.on('.scripts_workspace', 'click', '.socket', selectSocket);
